@@ -1,1 +1,3 @@
 google-cloud-pubsub
+pydantic
+dependency-injector
