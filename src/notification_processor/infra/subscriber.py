@@ -3,7 +3,7 @@ import asyncio
 from google.cloud.pubsub_v1 import SubscriberClient
 from google.cloud.pubsub_v1.subscriber.message import Message
 from google.cloud import pubsub_v1
-from configuration.container import Container
+from config.container import Container
 
 class Subscriber:
     def __init__(self, project_id: str, subscription_id: str, container: Container, max_messages: int):

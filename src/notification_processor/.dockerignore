@@ -1,0 +1,26 @@
+# Exclude the git history
+.git
+.gitignore
+
+# Exclude Python virtual environments and cache
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+
+# Exclude sensitive local configuration
+.env
+.env.*
+
+# Exclude testing and IDE artifacts
+.pytest_cache
+.vscode
+.idea
+
+# Exclude the Docker and gcloud ignore files themselves
+.dockerignore
+.gcloudignore
+
+# Exclude documentation, which is not needed in the running container
+README.md
