@@ -59,12 +59,9 @@ class Subscriber:
         try:
             # Block on the future result (handles messages until stopped)
             subscriber_future.result()
-        except KeyboardInterrupt:
-            print("\n🛑 Received interrupt signal, shutting down...")
         except Exception as e:
             print(f"❌ Unexpected error: {e}")
         finally:
-            # Clean shutdown
             subscriber_future.cancel()
             self.subscriber.close()
             print("🔒 Subscriber closed")
