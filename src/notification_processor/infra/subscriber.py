@@ -1,8 +1,6 @@
-# src/my_pubsub_processor/infrastructure/pubsub/subscriber.py
 import asyncio
 from google.cloud.pubsub_v1 import SubscriberClient
-from google.cloud.pubsub_v1.subscriber.message import Message
-from google.cloud import pubsub_v1
+from google.cloud.pubsub_v1.types import FlowControl
 from config.container import Container
 
 class Subscriber:
@@ -11,7 +9,7 @@ class Subscriber:
         self.subscription_id = subscription_id
         self.max_messages = max_messages
         self.container = container
-        self.subscriber = pubsub_v1.SubscriberClient()
+        self.subscriber = SubscriberClient()
         self.subscription_path = self.subscriber.subscription_path(project_id, subscription_id)
 
     async def run_subscriber(self):
@@ -47,7 +45,7 @@ class Subscriber:
                 message.nack()
 
         # Configure flow control
-        flow_control = pubsub_v1.types.FlowControl(max_messages=100)
+        flow_control = FlowControl(max_messages=100)
 
         # Start the subscriber with our sync callback that bridges to async
         subscriber_future = self.subscriber.subscribe(

@@ -1,0 +1,6 @@
+{
+  "project_id": "local-project",
+  "topic_id": "my-topic",
+  "subscription_id": "my-sub",
+  "max_messages": 100
+}

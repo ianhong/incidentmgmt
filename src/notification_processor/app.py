@@ -1,32 +1,41 @@
 #!/usr/bin/env python3
 
+import argparse
 import asyncio
 from functools import partial
 import os
 import signal
 from config.container import Container
+from config.config_manager import ConfigManager
 from infra.subscriber import Subscriber
 
-# Configuration from environment variables
-PROJECT_ID = os.environ.get("PUBSUB_PROJECT_ID", "local-project")
-TOPIC_ID = os.environ.get("PUBSUB_TOPIC_ID", "my-topic")
-SUBSCRIPTION_ID = "my-sub"
-
-# Thread pool for bridging sync/async
-container = Container()
-subscriber = Subscriber(
-    project_id=PROJECT_ID,
-    subscription_id=SUBSCRIPTION_ID,
-    container=container,
-    max_messages=100
-)
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 
 def handle_shutdown(shutdown_event):
     print("\n🛑 Received shutdown signal. Shutting down gracefully...")
     if shutdown_event:
         shutdown_event.set()
 
+def parse_arguments():
+    parse = argparse.ArgumentParser(description="Incident Management Notification Service")
+    parse.add_argument("--config")
+    return parse.parse_args()
+
 async def main():
+    args = parse_arguments()
+
+    container = Container()
+
+    config_manager = container.config_manager()
+    config = config_manager.load_config(args.config)
+
+    subscriber = Subscriber(
+        project_id=config.get("project_id"),
+        subscription_id=config.get("subscription_id"),
+        container=container,
+        max_messages=config.get("max_messages")
+    )
+
     shutdown_event = asyncio.Event()
     loop = asyncio.get_running_loop()
     for sig in (signal.SIGINT, signal.SIGTERM):

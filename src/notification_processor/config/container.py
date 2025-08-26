@@ -5,9 +5,14 @@ from application.commands.create_incident import (
 )
 from application.commands.dispatcher import CommandDispatcher
 from application.commands.factory import CommandFactory
-
+from config.config_manager import ConfigManager
 class Container(containers.DeclarativeContainer):
     create_incident_handler = providers.Factory(CreateIncidentCommandHandler)
+
+    config_manager = providers.Singleton(
+        ConfigManager,
+    )
+
     command_factory = providers.Singleton(
         CommandFactory,
     )
