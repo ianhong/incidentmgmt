@@ -56,9 +56,11 @@ class Subscriber:
             flow_control=flow_control
         )
 
+        loop = asyncio.get_running_loop()
         try:
-            # Block on the future result (handles messages until stopped)
-            subscriber_future.result()
+            await loop.run_in_executor(None, subscriber_future.result)
+        except asyncio.CancelledError:
+            print("🛑 Subscriber task cancelled.")
         except Exception as e:
             print(f"❌ Unexpected error: {e}")
         finally:
@@ -72,9 +74,6 @@ class Subscriber:
         This is where you'll add your async logic later.
         """
         try:
-            #message_data = message.data.decode('utf-8')
-            print(type(message).__name__)
-
             command_dispatcher = self.container.command_dispatcher()
             command_factory = self.container.command_factory()
             command = command_factory.create(message)
