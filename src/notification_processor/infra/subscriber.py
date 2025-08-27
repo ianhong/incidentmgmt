@@ -3,23 +3,26 @@ from google.cloud.pubsub_v1 import SubscriberClient
 from google.cloud.pubsub_v1.types import FlowControl
 from config.container import Container
 
+logger = None
 class Subscriber:
     def __init__(self, project_id: str, subscription_id: str, container: Container, max_messages: int):
+        global logger
         self.project_id = project_id
         self.subscription_id = subscription_id
         self.max_messages = max_messages
         self.container = container
         self.subscriber = SubscriberClient()
         self.subscription_path = self.subscriber.subscription_path(project_id, subscription_id)
+        logger = container.log_manager().get_logger(__name__)
 
     async def run_subscriber(self):
         """Main function using future-based (blocking) pattern."""
-        print("🚀 Starting Pub/Sub Subscriber")
-        print(f"📋 Project: {self.project_id}")
-        print(f"📋 Subscription: {self.subscription_id}")
-
-        print(f"🎧 Listening for messages on {self.subscription_path}...")
-        print("Press Ctrl+C to stop...")
+        global logger
+        logger.error("🚀 Starting Pub/Sub Subscriber")
+        logger.info(f"📋 Project: {self.project_id}")
+        logger.info(f"📋 Subscription: {self.subscription_id}")
+        logger.info(f"🎧 Listening for messages on {self.subscription_path}...")
+        logger.info("Press Ctrl+C to stop...")
 
         # Define the callback here to capture self/container
         def sync_callback(message):

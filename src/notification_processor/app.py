@@ -10,9 +10,11 @@ from config.config_manager import ConfigManager
 from infra.subscriber import Subscriber
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
+logger = None
 
 def handle_shutdown(shutdown_event):
-    print("\n🛑 Received shutdown signal. Shutting down gracefully...")
+    global logger
+    logger.warning("Received shutdown signal. Shutting down gracefully...")
     if shutdown_event:
         shutdown_event.set()
 
@@ -22,12 +24,17 @@ def parse_arguments():
     return parse.parse_args()
 
 async def main():
-    args = parse_arguments()
+    global logger
 
     container = Container()
-
     config_manager = container.config_manager()
+    log_manager = container.log_manager()
+
+    args = parse_arguments()
+
     config = config_manager.load_config(args.config)
+
+    logger = log_manager.get_logger(__name__)
 
     subscriber = Subscriber(
         project_id=config.get("project_id"),
@@ -52,13 +59,11 @@ async def main():
     try:
         await subscriber_task
     except asyncio.CancelledError:
-        print("Subscriber task cancelled.")
+        logger.error("Subscriber task cancelled.")
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\n👋 Goodbye!")
     except Exception as e:
-        print(f"❌ Fatal error: {e}")
+        logger.error(f"❌ Fatal error: {e}")
         exit(1)
