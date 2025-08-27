@@ -1,12 +1,37 @@
-# EditorConfig is awesome: https://EditorConfig.org
-
-# top-most EditorConfig file
+# This is the top-most .editorconfig file.
 root = true
 
+# General settings for all file types.
 [*]
-indent_style = space
-indent_size = 4
 end_of_line = lf
 charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Python-specific settings, adhering to PEP 8.
+[*.py]
+indent_style = space
+indent_size = 4
+# max_line_length is not an official EditorConfig property,
+# but it's used by some plugins/linters.
+# 88 is the default for the 'black' code formatter. PEP 8 suggests 79.
+max_line_length = 88
+
+# Settings for configuration and data files.
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Settings for shell scripts and Makefiles.
+[*.{sh,bash}]
+indent_style = space
+indent_size = 2
+
+# Makefiles must use tabs for recipes.
+[Makefile]
+indent_style = tab
+
+# Avoid trimming trailing whitespace in Markdown files,
+# as two spaces can be used for a hard line break.
+[*.md]
 trim_trailing_whitespace = false
-insert_final_newline = false
