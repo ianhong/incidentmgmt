@@ -3,26 +3,22 @@ from google.cloud.pubsub_v1 import SubscriberClient
 from google.cloud.pubsub_v1.types import FlowControl
 from config.container import Container
 
-logger = None
 class Subscriber:
     def __init__(self, project_id: str, subscription_id: str, container: Container, max_messages: int):
-        global logger
         self.project_id = project_id
         self.subscription_id = subscription_id
         self.max_messages = max_messages
         self.container = container
         self.subscriber = SubscriberClient()
         self.subscription_path = self.subscriber.subscription_path(project_id, subscription_id)
-        logger = container.log_manager().get_logger(__name__)
+        self.logger = container.logger_manager().get_logger(__name__)
 
     async def run_subscriber(self):
         """Main function using future-based (blocking) pattern."""
-        global logger
-        logger.error("🚀 Starting Pub/Sub Subscriber")
-        logger.info(f"📋 Project: {self.project_id}")
-        logger.info(f"📋 Subscription: {self.subscription_id}")
-        logger.info(f"🎧 Listening for messages on {self.subscription_path}...")
-        logger.info("Press Ctrl+C to stop...")
+        self.logger.info("Starting Pub/Sub Subscriber")
+        self.logger.info(f"Project: {self.project_id}")
+        self.logger.info(f"Subscription: {self.subscription_id}")
+        self.logger.info(f"Listening for messages on {self.subscription_path}...")
 
         # Define the callback here to capture self/container
         def sync_callback(message):
@@ -39,12 +35,12 @@ class Subscriber:
                 success = loop.run_until_complete(self.async_process_message(message))
                 if success:
                     message.ack()
-                    print(f"✅ Acknowledged message: {message.message_id}")
+                    self.logger.debug(f"Acknowledged message: {message.message_id}")
                 else:
                     message.nack()
-                    print(f"❌ Nacked message: {message.message_id}")
+                    self.logger.debug(f"Nacked message: {message.message_id}")
             except Exception as e:
-                print(f"💥 Error in callback for message {message.message_id}: {e}")
+                self.logger.error(f"Error in callback for message {message.message_id}: {e}")
                 message.nack()
 
         # Configure flow control
@@ -61,14 +57,14 @@ class Subscriber:
         try:
             await loop.run_in_executor(None, subscriber_future.result)
         except asyncio.CancelledError:
-            print("🛑 Subscriber task cancelled.")
+            self.logger.warning("Subscriber task cancelled.")
         except Exception as e:
-            print(f"❌ Unexpected error: {e}")
+            self.logger.error(f"Unexpected error: {e}")
         finally:
             subscriber_future.cancel()
             self.subscriber.close()
-            print("🔒 Subscriber closed")
-    
+            self.logger.info("Subscriber closed")
+
     async def async_process_message(self, message):
         """
         Async function to process a message.
@@ -80,8 +76,8 @@ class Subscriber:
             command = command_factory.create(message)
             command_dispatcher.dispatch(command)
 
-            print(f"✅ Message processed: {message.message_id}")
+            self.logger.debug(f"Message processed: {message.message_id}")
             return True
         except Exception as e:
-            print(f"❌ Error processing message {message.message_id}: {e}")
+            self.logger.debug(f"Error processing message {message.message_id}: {e}")
             return False

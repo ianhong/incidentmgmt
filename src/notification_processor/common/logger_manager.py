@@ -1,5 +1,5 @@
 import logging
-from config.config_manager import ConfigManager
+import os
 
 class LoggerManager:
     """
@@ -26,12 +26,10 @@ class LoggerManager:
             self._style._fmt = fmt
             return super().format(record)
 
-    def __init__(self, config_manager: ConfigManager):
-        self.config_manager = config_manager
+    def __init__(self):
         self.logger = logging.getLogger()
         self.set_formats(self.DEFAULT_FORMATS, self.DEFAULT_DATEFMT)
-        self.config = config_manager.load_config()
-        self.logger.setLevel(getattr(logging, self.config.get("log_level", "WARNING").upper(), logging.WARNING))
+        self.logger.setLevel(os.getenv("PUBSUB_LOG_LEVEL", "WARNING").upper())
 
     def set_formats(self, formats: dict, datefmt: str):
         handler_exists = any(isinstance(h, logging.StreamHandler) for h in self.logger.handlers)

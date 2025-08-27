@@ -7,23 +7,30 @@ from application.commands.dispatcher import CommandDispatcher
 from application.commands.factory import CommandFactory
 from config.config_manager import ConfigManager
 from common.logger_manager import LoggerManager
+
 class Container(containers.DeclarativeContainer):
-    create_incident_handler = providers.Factory(CreateIncidentCommandHandler)
+    logger_manager = providers.Singleton(
+        LoggerManager,
+    )
 
     config_manager = providers.Singleton(
         ConfigManager,
+        logger_manager=logger_manager,
     )
 
-    log_manager = providers.Singleton(
-        LoggerManager,
+    create_incident_handler = providers.Factory(
+        CreateIncidentCommandHandler,
         config_manager=config_manager,
+        logger_manager=logger_manager
     )
 
     command_factory = providers.Singleton(
         CommandFactory,
     )
+
     command_dispatcher = providers.Factory(
         CommandDispatcher,
+        logger_manager=logger_manager,
         handlers=providers.Dict(
             {
                 CreateIncidentCommand: (

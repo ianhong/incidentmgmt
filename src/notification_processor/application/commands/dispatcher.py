@@ -2,6 +2,7 @@
 
 from typing import Type, Tuple
 from dependency_injector.providers import Provider
+from common.logger_manager import LoggerManager
 from application.commands.base import Command, CommandHandler
 
 class CommandDispatcher:
@@ -9,6 +10,7 @@ class CommandDispatcher:
 
     def __init__(
         self,
+        logger_manager: LoggerManager,
         handlers: dict[Type[Command], Tuple[Provider[CommandHandler], ...]],
     ):
         """
@@ -19,6 +21,7 @@ class CommandDispatcher:
                       corresponding handler providers from the DI container.
         """
         self._handlers = handlers
+        self.logger = logger_manager.get_logger(__name__)
 
     def dispatch(self, command: Command) -> None:
         """Finds and executes all registered handlers for the given command."""
@@ -30,7 +33,7 @@ class CommandDispatcher:
             raise ValueError(f"No handlers registered for command {type(command).__name__}")
         
         # 2. Iterate through each provider in the tuple.
-        print(f"\nDispatching {type(command).__name__} to {len(handler_providers)} handler(s)...")
+        self.logger.info(f"Dispatching {type(command).__name__} to {len(handler_providers)} handler(s)...")
         for provider in handler_providers:
             # 3. Create an instance of the handler from the provider.
             handler = provider()

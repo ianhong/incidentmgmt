@@ -28,13 +28,13 @@ async def main():
 
     container = Container()
     config_manager = container.config_manager()
-    log_manager = container.log_manager()
+    logging_manager = container.logger_manager()
 
     args = parse_arguments()
 
     config = config_manager.load_config(args.config)
 
-    logger = log_manager.get_logger(__name__)
+    logger = logging_manager.get_logger(__name__)
 
     subscriber = Subscriber(
         project_id=config.get("project_id"),
