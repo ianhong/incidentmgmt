@@ -1,9 +1,18 @@
+"""
+Structured Logging Manager Module
+"""
+
 import logging
 import os
 import json
 import structlog
+import threading
+import socket
 
 class LoggerManager:
+    """
+    Centralized logger manager using structlog for structured logging.
+    """
     _shared_processors = [
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
@@ -13,6 +22,9 @@ class LoggerManager:
     ]
 
     def __init__(self):
+        """
+        Initialize the structured logging configuration.
+        """
         structlog.configure(
             processors=self._shared_processors
             + [
@@ -40,4 +52,13 @@ class LoggerManager:
         root_logger.setLevel(logging.INFO)
 
     def get_logger(self, name: str):
+        """
+        Get a structured logger instance for the given name.
+        
+        Args:
+            name: The logger name (typically __name__ of the calling module)
+            
+        Returns:
+            structlog.BoundLogger: Configured logger instance
+        """
         return structlog.get_logger(name)

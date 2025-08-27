@@ -1,5 +1,5 @@
 """
-Services package for the background service application.
+Infrastructure Package
 """
 
 from .subscriber import Subscriber

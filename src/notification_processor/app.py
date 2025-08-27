@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Incident Management Notification Processor
+"""
 
 import argparse
 import asyncio
@@ -13,17 +16,32 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 logger = None
 
 def handle_shutdown(shutdown_event):
+    """
+    Handle shutdown signals by setting the shutdown event.
+
+    Args:
+        shutdown_event: asyncio.Event to signal shutdown to the main loop
+    """
     global logger
     logger.warning("Received shutdown signal. Shutting down gracefully...")
     if shutdown_event:
         shutdown_event.set()
 
 def parse_arguments():
+    """
+    Parse command line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed command line arguments
+    """
     parse = argparse.ArgumentParser(description="Incident Management Notification Service")
     parse.add_argument("--config")
     return parse.parse_args()
 
 async def main():
+    """
+    Main application entry point.
+    """
     global logger
 
     container = Container()
@@ -65,5 +83,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except Exception as e:
-        logger.error(f"❌ Fatal error: {e}")
+        logger.error(f"Fatal error: {e}")
         exit(1)

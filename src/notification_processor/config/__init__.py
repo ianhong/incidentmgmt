@@ -1,5 +1,5 @@
 """
-Services package for the background service application.
+Configuration Package
 """
 
 from .container import Container

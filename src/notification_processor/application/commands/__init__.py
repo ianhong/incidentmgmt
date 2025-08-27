@@ -1,5 +1,5 @@
 """
-Services package for the background service application.
+Application Commands & CommandHandler Package
 """
 
 from .create_incident import CreateIncidentCommand

@@ -1,10 +1,27 @@
+"""
+Google Cloud Pub/Sub Subscriber Infrastructure Module
+"""
+
 import asyncio
 from google.cloud.pubsub_v1 import SubscriberClient
 from google.cloud.pubsub_v1.types import FlowControl
 from config.container import Container
 
 class Subscriber:
+    """
+    Google Cloud Pub/Sub subscriber for processing incident management messages.
+    """
+
     def __init__(self, project_id: str, subscription_id: str, container: Container, max_messages: int):
+        """
+        Initialize the Pub/Sub subscriber.
+
+        Args:
+            project_id: Google Cloud project ID
+            subscription_id: Pub/Sub subscription ID
+            container: Dependency injection container
+            max_messages: Maximum number of messages to process concurrently
+        """
         self.project_id = project_id
         self.subscription_id = subscription_id
         self.max_messages = max_messages
@@ -14,7 +31,9 @@ class Subscriber:
         self.logger = container.logger_manager().get_logger(__name__)
 
     async def run_subscriber(self):
-        """Main function using future-based (blocking) pattern."""
+        """
+        Main subscriber method using future-based (blocking) pattern.
+        """
         self.logger.info("Starting Pub/Sub Subscriber")
         self.logger.info(f"Project: {self.project_id}")
         self.logger.info(f"Subscription: {self.subscription_id}")
@@ -23,8 +42,10 @@ class Subscriber:
         # Define the callback here to capture self/container
         def sync_callback(message):
             """
-            Sync callback that bridges to async processing.
-            This is called by the Pub/Sub client.
+            Synchronous callback that bridges to async processing.
+
+            Args:
+                message: Pub/Sub message to process
             """
             try:
                 loop = asyncio.get_event_loop()
@@ -67,8 +88,13 @@ class Subscriber:
 
     async def async_process_message(self, message):
         """
-        Async function to process a message.
-        This is where you'll add your async logic later.
+        Asynchronously process a received Pub/Sub message.
+
+        Args:
+            message: Pub/Sub message to process
+
+        Returns:
+            bool: True if processing succeeded, False otherwise
         """
         try:
             command_dispatcher = self.container.command_dispatcher()

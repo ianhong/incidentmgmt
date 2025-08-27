@@ -1,3 +1,7 @@
+"""
+Dependency Injection Container Module
+"""
+
 from dependency_injector import containers, providers
 from application.commands.create_incident import (
     CreateIncidentCommand,
@@ -9,6 +13,9 @@ from config.config_manager import ConfigManager
 from common.logger_manager import LoggerManager
 
 class Container(containers.DeclarativeContainer):
+    """
+    Dependency injection container for the notification processor.
+    """
     logger_manager = providers.Singleton(
         LoggerManager,
     )
