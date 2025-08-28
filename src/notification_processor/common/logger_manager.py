@@ -46,6 +46,7 @@ class LoggerManager:
         handler = logging.StreamHandler()
         handler.setFormatter(formatter)
         root_logger = logging.getLogger()
+        root_logger.handlers.clear()
         root_logger.addHandler(handler)
         root_logger.setLevel(log_level)
 
