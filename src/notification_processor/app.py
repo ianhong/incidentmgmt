@@ -8,7 +8,7 @@ import asyncio
 from functools import partial
 import os
 import signal
-from config.container import Container
+from di.container import Container
 from config.config_manager import ConfigManager
 from infra.subscriber import Subscriber
 

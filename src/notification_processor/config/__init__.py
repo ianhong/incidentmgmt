@@ -2,8 +2,8 @@
 Configuration Package
 """
 
-from .container import Container
+from .config_manager import ConfigManager
 
 __all__ = [
-    'Container'
+    'ConfigManager'
 ]

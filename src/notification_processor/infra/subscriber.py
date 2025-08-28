@@ -5,7 +5,7 @@ Google Cloud Pub/Sub Subscriber Infrastructure Module
 import asyncio
 from google.cloud.pubsub_v1 import SubscriberClient
 from google.cloud.pubsub_v1.types import FlowControl
-from config.container import Container
+from di.container import Container
 
 class Subscriber:
     """
