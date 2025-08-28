@@ -12,7 +12,7 @@ docker run --rm --network host \
   -e PUBSUB_PROJECT_ID=local-project \
   -e PUBSUB_SUBSCRIPTION_ID=my-sub \
   -e PUBSUB_LOG_LEVEL=INFO \
-  -e PUBSUB_EMULATOR_HOST=localhost:8681 \
+  -e PUBSUB_EMULATOR_HOST=localhost:8681 -e PUBSUB_LOG_FORMAT=json \
   notification-processor
 
 
