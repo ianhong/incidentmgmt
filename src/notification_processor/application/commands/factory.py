@@ -5,7 +5,7 @@ Command Factory Module
 from typing import Type
 from application.commands.base import Command
 from application.commands.create_incident import CreateIncidentCommand
-from google.cloud import pubsub_v1
+
 
 class CommandFactory:
     """
@@ -36,13 +36,11 @@ class CommandFactory:
             ValueError: If the command type is not registered or message is invalid
         """
 
-        payload = {
-            "description": message.data.decode('utf-8')
-        }
+        payload = {"description": message.data.decode("utf-8")}
 
         command_class = self._commands.get("CreateIncident")
         if not command_class:
-            raise ValueError(f"Unknown command type")
+            raise ValueError("Unknown command type")
 
         # Pydantic models can be instantiated directly from a dictionary
         return command_class(**payload)

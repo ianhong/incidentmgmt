@@ -2,11 +2,11 @@
 Create Incident Command and Handler Module
 """
 
-import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from .base import Command, CommandHandler
 from config.config_manager import ConfigManager
 from common.logger_manager import LoggerManager
+
 
 class CreateIncidentCommand(BaseModel, Command):
     """
@@ -15,7 +15,9 @@ class CreateIncidentCommand(BaseModel, Command):
     Attributes:
         description: Human-readable description of the incident
     """
+
     description: str
+
 
 class CreateIncidentCommandHandler(CommandHandler[CreateIncidentCommand]):
     """
@@ -45,4 +47,6 @@ class CreateIncidentCommandHandler(CommandHandler[CreateIncidentCommand]):
         """
         if not command.description:
             raise ValueError("Incident description cannot be empty.")
-        self.logger.info(f"Successfully created incident for customer: {command.description}")
+        self.logger.info(
+            f"Successfully created incident for customer: {command.description}"
+        )

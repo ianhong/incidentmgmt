@@ -9,11 +9,11 @@ from functools import partial
 import os
 import signal
 from di.container import Container
-from config.config_manager import ConfigManager
 from infra.subscriber import Subscriber
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 logger = None
+
 
 def handle_shutdown(shutdown_event):
     """
@@ -27,6 +27,7 @@ def handle_shutdown(shutdown_event):
     if shutdown_event:
         shutdown_event.set()
 
+
 def parse_arguments():
     """
     Parse command line arguments.
@@ -34,9 +35,12 @@ def parse_arguments():
     Returns:
         argparse.Namespace: Parsed command line arguments
     """
-    parse = argparse.ArgumentParser(description="Incident Management Notification Service")
+    parse = argparse.ArgumentParser(
+        description="Incident Management Notification Service"
+    )
     parse.add_argument("--config")
     return parse.parse_args()
+
 
 async def main():
     """
@@ -58,7 +62,7 @@ async def main():
         project_id=config.get("project_id"),
         subscription_id=config.get("subscription_id"),
         container=container,
-        max_messages=config.get("max_messages")
+        max_messages=config.get("max_messages"),
     )
 
     shutdown_event = asyncio.Event()
@@ -66,8 +70,7 @@ async def main():
     for sig in (signal.SIGINT, signal.SIGTERM):
         try:
             loop.add_signal_handler(
-                sig,
-                partial(handle_shutdown, shutdown_event=shutdown_event)
+                sig, partial(handle_shutdown, shutdown_event=shutdown_event)
             )
         except NotImplementedError:
             pass
@@ -78,6 +81,7 @@ async def main():
         await subscriber_task
     except asyncio.CancelledError:
         logger.error("Subscriber task cancelled.")
+
 
 if __name__ == "__main__":
     try:

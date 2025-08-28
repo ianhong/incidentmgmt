@@ -6,10 +6,12 @@ import os
 import json
 from common.logger_manager import LoggerManager
 
+
 class ConfigManager:
     """
     Centralized configuration manager for environment variables and settings.
     """
+
     def __init__(self, logger_manager: LoggerManager):
         """
         Initialize the configuration manager.
@@ -17,7 +19,6 @@ class ConfigManager:
         Args:
             logger_manager: LoggerManager instance for logging
         """
-        config = {}
         self.project_id = os.environ.get("PUBSUB_PROJECT_ID", "unknown")
         self.topic_id = os.environ.get("PUBSUB_TOPIC_ID", "unkonwn")
         self.subscription_id = os.environ.get("PUBSUB_SUBSCRIPTION_ID", "unknown")
