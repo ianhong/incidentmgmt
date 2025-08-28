@@ -7,12 +7,19 @@ from google.cloud.pubsub_v1 import SubscriberClient
 from google.cloud.pubsub_v1.types import FlowControl
 from di.container import Container
 
+
 class Subscriber:
     """
     Google Cloud Pub/Sub subscriber for processing incident management messages.
     """
 
-    def __init__(self, project_id: str, subscription_id: str, container: Container, max_messages: int):
+    def __init__(
+        self,
+        project_id: str,
+        subscription_id: str,
+        container: Container,
+        max_messages: int,
+    ):
         """
         Initialize the Pub/Sub subscriber.
 
@@ -27,17 +34,22 @@ class Subscriber:
         self.max_messages = max_messages
         self.container = container
         self.subscriber = SubscriberClient()
-        self.subscription_path = self.subscriber.subscription_path(project_id, subscription_id)
+        self.subscription_path = self.subscriber.subscription_path(
+            project_id, subscription_id
+        )
         self.logger = container.logger_manager().get_logger(__name__)
 
     async def run_subscriber(self):
         """
         Main subscriber method using future-based (blocking) pattern.
         """
-        self.logger.info("Starting Pub/Sub Subscriber")
-        self.logger.info(f"Project: {self.project_id}")
-        self.logger.info(f"Subscription: {self.subscription_id}")
-        self.logger.info(f"Listening for messages on {self.subscription_path}...")
+        self.logger.info(
+            "Starting Pub/Sub Subscriber",
+            project_id=self.project_id,
+            subscription_id=self.subscription_id,
+            subscription_path=self.subscription_path,
+            max_messages=self.max_messages,
+        )
 
         # Define the callback here to capture self/container
         def sync_callback(message):
@@ -61,7 +73,9 @@ class Subscriber:
                     message.nack()
                     self.logger.debug(f"Nacked message: {message.message_id}")
             except Exception as e:
-                self.logger.error(f"Error in callback for message {message.message_id}: {e}")
+                self.logger.error(
+                    f"Error in callback for message {message.message_id}: {e}"
+                )
                 message.nack()
 
         # Configure flow control
@@ -69,9 +83,7 @@ class Subscriber:
 
         # Start the subscriber with our sync callback that bridges to async
         subscriber_future = self.subscriber.subscribe(
-            self.subscription_path,
-            callback=sync_callback,
-            flow_control=flow_control
+            self.subscription_path, callback=sync_callback, flow_control=flow_control
         )
 
         loop = asyncio.get_running_loop()
